@@ -28,16 +28,21 @@ apiEvent.on("package-update", (data) => {
   console.log(data);
 });
 
+apiEvent.on("ram-api-update", (data) => {
+  console.log(data);
+});
+
 //emit to change settings or stop event loops
 
-apiEvent.emit("stop-update-check"); // will stop the update checker that binds to package-update
+apiEvent.emit("stop-update-check"); // will stop the update checker that binds to package-update & ram-api-update
 
-apiEvent.emit("start-update-check"); // will start the update checker that binds to package-update will stop first if already running to avoid duplicates
+apiEvent.emit("start-update-check"); // will start the update checker that binds to package-update & ram-api-update will stop first if already running to avoid duplicates
 ```
 
 > Listenable Events
 
 package-update
+ram-api-update
 
 > Emit Events
 
