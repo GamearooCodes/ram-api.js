@@ -13,42 +13,44 @@ import { DemoEndpoints } from './Demo';
 
 
 
-var test = setInterval(async() => {
-    if(await checkForUpdates()) {
-      if(currentVersion.version.includes("-dev") || currentVersion.version.includes("-beta")) {
-        // does nothing if its -dev or -beta as they will trigger the checkers
-        // left this blank for future checkers for the dev & beta tags
-      } else {
-        function isLatestInfo(obj: any): obj is { "dist-tags": { latest: string } } {
-          return obj && obj["dist-tags"] && typeof obj["dist-tags"].latest === "string";
-        }
-
-        let latestVersion
-        
-        const latestInfo: unknown = await fetch.json(`/${packageName}`);
-        if (isLatestInfo(latestInfo)) {
-           latestVersion = latestInfo["dist-tags"].latest;
-        } else {
-          // Handle the case where latestInfo doesn't have the expected structure.
-        }
-      
-      Events.emit("package-update", {name: 'ram-api.js', currentVersion: currentVersion.version, tag: "stable", latestVersion, toUpdate: `npm i ram-api.js@latest or yarn add ram-api.js@${latestVersion}`})
+var test = setInterval(async () => {
+  if (await checkForUpdates()) {
+    if (currentVersion.version.includes("-dev") || currentVersion.version.includes("-beta")) {
+      // does nothing if its -dev or -beta as they will trigger the checkers
+      // left this blank for future checkers for the dev & beta tags
+    } else {
+      function isLatestInfo(obj: any): obj is { "dist-tags": { latest: string } } {
+        return obj && obj["dist-tags"] && typeof obj["dist-tags"].latest === "string";
       }
 
-      if((await apiVersion()).outdated) {
+      let latestVersion
 
-        let data = await apiVersion();
+      const latestInfo: unknown = await fetch.json(`/${packageName}`);
+      if (isLatestInfo(latestInfo)) {
+        latestVersion = latestInfo["dist-tags"].latest;
+      } else {
+        // Handle the case where latestInfo doesn't have the expected structure.
+      }
 
-        if(!(await apiVersion()).supported) {
-          Events.emit("ram-api-update", {outdated: data.outdated,
-            supported: data.supported,
-            version: data.version,
-            latest: data.latest})
-        }
+      Events.emit("package-update", { name: 'ram-api.js', currentVersion: currentVersion.version, tag: "stable", latestVersion, toUpdate: `npm i ram-api.js@latest or yarn add ram-api.js@${latestVersion}` })
+    }
 
+    if ((await apiVersion()).outdated) {
+
+      let data = await apiVersion();
+
+      if (!(await apiVersion()).supported) {
+        Events.emit("ram-api-update", {
+          outdated: data.outdated,
+          supported: data.supported,
+          version: data.version,
+          latest: data.latest
+        })
       }
 
     }
+
+  }
 }, 60000)
 
 
@@ -58,30 +60,32 @@ Events.on('stop-update-check', (data) => {
 
 Events.on('start-update-check', (data) => {
   Events.emit("stop-update-check")
-  test = setInterval(async() => {
-    if(await checkForUpdates()) {
-      if(currentVersion.version.includes("-dev") || currentVersion.version.includes("-beta")) {
+  test = setInterval(async () => {
+    if (await checkForUpdates()) {
+      if (currentVersion.version.includes("-dev") || currentVersion.version.includes("-beta")) {
         // does nothing if its -dev or -beta as they will trigger the checkers
         // left this blank for future checkers for the dev & beta tags
       } else {
 
-      
-        Events.emit("package-update", {name: 'ram-api.js', currentVersion, tag: "stable", toUpdate: "npm i ram-api.js@latest"})
+
+        Events.emit("package-update", { name: 'ram-api.js', currentVersion, tag: "stable", toUpdate: "npm i ram-api.js@latest" })
       }
-      if((await apiVersion()).outdated) {
+      if ((await apiVersion()).outdated) {
 
         let data = await apiVersion();
 
-        if(!(await apiVersion()).supported) {
-          Events.emit("ram-api-update", {outdated: data.outdated,
+        if (!(await apiVersion()).supported) {
+          Events.emit("ram-api-update", {
+            outdated: data.outdated,
             supported: data.supported,
             version: data.version,
-            latest: data.latest})
+            latest: data.latest
+          })
         }
 
       }
     }
-}, 60000)
+  }, 60000)
 })
 
 async function apiVersion(): Promise<{
@@ -91,10 +95,10 @@ async function apiVersion(): Promise<{
   latest: string
 
 }> {
-  let data2 = {outdated: false, supported: false, version: "", latest: ""};
+  let data2 = { outdated: false, supported: false, version: "", latest: "" };
   new DemoEndpoints(60000, 0).versionInfoAsync("v13").then(data => {
- 
-    data2 =  {
+
+    data2 = {
       outdated: data.outdated,
       supported: data.supported,
       version: data.version,
@@ -113,31 +117,31 @@ async function apiVersion(): Promise<{
 
 
 async function checkForUpdates() {
-    try {
-      
-        function isLatestInfo(obj: any): obj is { "dist-tags": { latest: string } } {
-          return obj && obj["dist-tags"] && typeof obj["dist-tags"].latest === "string";
-        }
+  try {
 
-        let latestVersion
-        
-        const latestInfo: unknown = await fetch.json(`/${packageName}`);
-        if (isLatestInfo(latestInfo)) {
-           latestVersion = latestInfo["dist-tags"].latest;
-        } else {
-          // Handle the case where latestInfo doesn't have the expected structure.
-        }
-        
-  
-      if (latestVersion !== currentVersion.version) {
-       return true;
-        
-      } else {
-        return false
-      }
-    } catch (error) {
-     
+    function isLatestInfo(obj: any): obj is { "dist-tags": { latest: string } } {
+      return obj && obj["dist-tags"] && typeof obj["dist-tags"].latest === "string";
     }
-  }
 
-  export {Events}
+    let latestVersion
+
+    const latestInfo: unknown = await fetch.json(`/${packageName}`);
+    if (isLatestInfo(latestInfo)) {
+      latestVersion = latestInfo["dist-tags"].latest;
+    } else {
+      // Handle the case where latestInfo doesn't have the expected structure.
+    }
+
+
+    if (latestVersion !== currentVersion.version) {
+      return true;
+
+    } else {
+      return false
+    }
+  } catch (error) {
+
+  }
+}
+
+export { Events }
